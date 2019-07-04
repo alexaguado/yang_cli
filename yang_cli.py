@@ -141,7 +141,7 @@ def from_dict_to_rc(path,cnt,js,pprefix,isfirst):
                     for el in elems:
                         e=el.split("/")[-1]
                         nwpath=path+"/"+el
-                        pfx=cnt[nwpath]["prefix"]
+                        pfx=cnt[nwpath]["orig"]
                         add=""
                         spfx=pprefix
                         if pprefix!=pfx:
@@ -152,7 +152,7 @@ def from_dict_to_rc(path,cnt,js,pprefix,isfirst):
                             next=next[l]
                         auxret[add+e]=from_dict_to_rc(nwpath,cnt,next,spfx,False)
                 else:
-                    pfx=cnt[nwpath]["prefix"]
+                    pfx=cnt[nwpath]["orig"]
                     add=""
                     spfx=pprefix
                     if pprefix!=pfx:
@@ -170,7 +170,7 @@ def from_dict_to_rc(path,cnt,js,pprefix,isfirst):
                         for el in elems:
                             e=el.split("/")[-1]
                             nwpath=path+"/"+el
-                            pfx=cnt[nwpath]["prefix"]
+                            pfx=cnt[nwpath]["orig"]
                             add=""
                             spfx=pprefix
                             if pprefix!=pfx:
@@ -181,7 +181,7 @@ def from_dict_to_rc(path,cnt,js,pprefix,isfirst):
                                 next=next[l]
                             auxret[add+e]=from_dict_to_rc(nwpath,cnt,next,spfx,False)
                     else:
-                        pfx=cnt[nwpath]["prefix"]
+                        pfx=cnt[nwpath]["orig"]
                         add=""
                         spfx=pprefix
                         if pprefix!=pfx:
@@ -199,7 +199,7 @@ def from_dict_to_rc(path,cnt,js,pprefix,isfirst):
                 for el in elems:
                     e=el.split("/")[-1]
                     nwpath=path+"/"+el
-                    pfx=cnt[nwpath]["prefix"]
+                    pfx=cnt[nwpath]["orig"]
                     add=""
                     spfx=pprefix
                     if pprefix!=pfx:
@@ -210,7 +210,7 @@ def from_dict_to_rc(path,cnt,js,pprefix,isfirst):
                         next=next[l]
                     ret[add+e]=from_dict_to_rc(nwpath,cnt,next,spfx,False)
             else:
-                pfx=cnt[nwpath]["prefix"]
+                pfx=cnt[nwpath]["orig"]
                 add=""
                 spfx=pprefix
                 if pprefix!=pfx:
@@ -228,7 +228,7 @@ def build_url(cfgp, curp, cnt, cfg):
         if el in curp:
             auxpth+=el+"/"
             preamble=""
-            pfx=cnt[auxpth[:-1]]['prefix']
+            pfx=cnt[auxpth[:-1]]['orig']
             if pfx!=pprefix:
                 preamble=pfx+":"
                 pprefix=pfx
@@ -249,7 +249,7 @@ def restconf(cfgp, curp, cnt, cfg, session):
             print "\tAccept: application/yang-data+json\n"
         elif text=="POST":
             auxurl=build_url(cfgp, curp, cnt, cfg)
-            pprefix=cnt[curp]["prefix"]
+            pprefix=cnt[curp]["orig"]
             url='/'.join(auxurl.split("/")[:-1])
             node=auxurl.split("/")[-1].split("=")[0]
             print "\nExample request:\n"
@@ -260,7 +260,7 @@ def restconf(cfgp, curp, cnt, cfg, session):
             #else: print(json.dumps({pprefix+":"+node:find_json(cfgp,cfg)}, indent=4, sort_keys=True)+"\n")
         elif text=="PUT":
             auxurl=build_url(cfgp, curp, cnt, cfg)
-            pprefix=cnt[curp]["prefix"]
+            pprefix=cnt[curp]["orig"]
             node=auxurl.split("/")[-1].split("=")[0]
             print "\nExample request:\n"
             print "\tPUT "+auxurl+" HTTP/1.1"
@@ -269,7 +269,7 @@ def restconf(cfgp, curp, cnt, cfg, session):
             print(json.dumps({pprefix+":"+node:from_dict_to_rc(curp,cnt,find_json(cfgp,cfg),pprefix, True)}, indent=4, sort_keys=True)+"\n")
         elif text=="PATCH":
             auxurl=build_url(cfgp, curp, cnt, cfg)
-            pprefix=cnt[curp]["prefix"]
+            pprefix=cnt[curp]["orig"]
             node=auxurl.split("/")[-1].split("=")[0]
             print "\nExample request:\n"
             print "\tPATCH "+auxurl+" HTTP/1.1"
@@ -358,8 +358,8 @@ def prompt_pyang(content):
                     k=text
             else: k=config.keys()[0]
             if write:
-                cfgrc=from_dict_to_rc(k,content,config[k],content[k]["prefix"],True)
-                cfile.write(json.dumps({content[k]["prefix"]+":"+k:cfgrc}, indent=4, sort_keys=True))
+                cfgrc=from_dict_to_rc(k,content,config[k],content[k]["orig"],True)
+                cfile.write(json.dumps({content[k]["orig"]+":"+k:cfgrc}, indent=4, sort_keys=True))
         elif text=="loadrc":
             files=[]
             for (dirpath, dirnames, filenames) in os.walk("."):
